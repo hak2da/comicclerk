@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.SearchBookMapper">
+
+<!-- 	<select id="getListWithPaging" resultType="com.comic.model.BookVO">
+		<![CDATA[
+		select 
+			BOOK_NAME, BOOK_LOC, BOOK_PUBLISHER, BOOK_WRITER, BOOK_CONTENT, BOOK_CATEGORY, BOOK_LASTBOOK, BOOK_STATUS
+		from
+			( 
+			select /*+INDEX_DESC(COMIC_BOOK pk_COMIC_BOOK) */
+				rownum rn, BOOK_NAME, BOOK_LOC, BOOK_PUBLISHER, BOOK_WRITER, BOOK_CONTENT, BOOK_CATEGORY, BOOK_LASTBOOK, BOOK_STATUS
+			from 
+				COMIC_BOOK
+			where
+		
+			]]>
+			
+			<include refid="criteria"></include> 
+		
+		  <![CDATA[	
+		  	rownum <=#{pageNum} * #{amount}
+		  	)
+		 where rn > (#{pageNum}-1) * #{amount} 
+		 ]]>	
+	</select> -->
+	
+	<select id="getListWithPaging" resultType="com.comic.model.BookVO">
+		<![CDATA[
+		select 
+			BOOK_NAME, BOOK_LOC, BOOK_PUBLISHER, BOOK_WRITER, BOOK_CONTENT, BOOK_CATEGORY, BOOK_LASTBOOK, BOOK_STATUS
+		from
+			( 
+			select /*+INDEX_DESC(COMIC_BOOK pk_COMIC_BOOK) */
+				rownum rn, BOOK_NAME, BOOK_LOC, BOOK_PUBLISHER, BOOK_WRITER, BOOK_CONTENT, BOOK_CATEGORY, BOOK_LASTBOOK, BOOK_STATUS
+			from 
+				COMIC_BOOK
+			where
+		
+			]]>
+			
+			<include refid="criteria"></include> 
+		
+		  <![CDATA[	
+		  	rownum <=#{pageNum} * #{amount}
+		  	)
+		 where rn > (#{pageNum}-1) * #{amount} 
+		 ]]>	
+	</select>
+
+	<select id="getTotalCount" resultType="int">
+		select count(*) from COMIC_BOOK where
+		<include refid="criteria"></include>
+		
+		BOOK_NAME is NOT NULL
+
+	</select>
+
+	
+	
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+			<foreach item='type' collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							BOOK_NAME like '%'||#{keyword}||'%'
+						</when>
+						<when test="type == 'C'.toString()">
+							BOOK_CATEGORY like '%'||#{keyword}||'%'
+						</when>
+						<when test="type == 'W'.toString()">
+							BOOK_WRITER like '%'||#{keyword}||'%'
+						</when>
+						<when test="type == 'N'.toString()">
+							BOOK_CONTENT like '%'||#{keyword}||'%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>
+	</sql>
+	
+</mapper>

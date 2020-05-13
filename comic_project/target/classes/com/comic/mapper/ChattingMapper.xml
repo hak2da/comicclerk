@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.ChattingMapper">
+
+	<insert id="chatAdd" >
+		insert into
+		comic_chat(chat_num, chat_roomnum, chat_id, chat_time,
+		chat_onoff, chat_content)
+		values ((select NVL(max(chat_num), 0)+1 from comic_chat),
+		#{chat_roomnum}, #{chat_id}, sysdate, #{chat_onoff}, #{chat_content})
+	</insert>
+	
+	<select id="chatSelect"
+		resultType="com.comic.model.ChatVO">
+		select * from COMIC_CHAT where CHAT_ONOFF = 'on' AND chat_roomnum = #{roomNum} 
+		order by chat_num
+	</select>
+	
+	<delete id="deleteChat">
+		delete from comic_chat where chat_roomnum = #{roomNum}
+	</delete>
+	
+</mapper> 

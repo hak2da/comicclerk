@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.ProductOrderMapper">
+	
+	<select id="productOrderList" resultType="com.comic.model.ProductOrderVO">
+		SELECT * FROM COMIC_PRODUCTORDER
+	</select>
+	
+	<delete id="productOrderDelete">
+		DELETE COMIC_PRODUCTORDER WHERE PRODUCTORDER_NUM=#{productOrder_num}
+	</delete>
+	
+	<select id="productOrderNumSelect" resultType="Integer">
+		SELECT COUNT(*) FROM COMIC_PRODUCTORDER WHERE PRODUCTORDER_NUM > #{productOrder_num}
+	</select>
+	
+	<update id="productOrderNumUpdate">
+		UPDATE COMIC_PRODUCTORDER SET PRODUCTORDER_NUM=#{productOrder_num}-1 WHERE PRODUCTORDER_NUM=#{productOrder_num}
+	</update>
+	
+	<insert id="productOrderInsert">
+		INSERT INTO COMIC_PRODUCTORDER VALUES(
+    		(SELECT NVL(MAX(PRODUCTORDER_NUM),0)+1 FROM COMIC_PRODUCTORDER),
+    		#{productOrder_product_name},#{productOrder_cost},#{productOrder_qty},SYSDATE)
+	</insert>
+	
+	<select id="productRead" resultType="com.comic.model.ProductOrderVO">
+		SELECT * FROM COMIC_PRODUCTORDER WHERE PRODUCTORDER_NUM=#{productOrder_num}
+	</select>
+	
+	<update id="productOrderUpdate">
+		UPDATE COMIC_PRODUCTORDER SET
+		PRODUCTORDER_NUM=#{productOrder_num},
+		PRODUCTORDER_PRODUCT_NAME=#{productOrder_product_name},
+		PRODUCTORDER_COST=#{productOrder_cost},
+		PRODUCTORDER_QTY=#{productOrder_qty},
+		PRODUCT_DATE=SYSDATE
+		WHERE PRODUCTORDER_NUM=#{productOrder_num}
+	</update>
+	
+	<update id="productOrderCheck">
+	UPDATE COMIC_PRODUCTSTOCK SET 
+	PRODUCT_QTY=PRODUCT_QTY + (SELECT PRODUCTORDER_QTY FROM COMIC_PRODUCTORDER WHERE PRODUCTORDER_NUM=#{productOrder_num})
+	WHERE PRODUCT_NAME=(SELECT PRODUCT_NAME FROM COMIC_PRODUCTSTOCK WHERE PRODUCT_NAME=(SELECT PRODUCTORDER_PRODUCT_NAME FROM COMIC_PRODUCTORDER WHERE PRODUCTORDER_NUM=#{productOrder_num}))
+	</update>
+	
+</mapper>

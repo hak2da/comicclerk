@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.MemberMapper">
+	
+	<insert id="memberInsert">
+		INSERT INTO COMIC_MEMBER(MEMBER_ID,MEMBER_PWD,MEMBER_NAME,MEMBER_EMAIL,MEMBER_PHONE_NUMBER) VALUES
+		(#{MEMBER_ID}, #{MEMBER_PWD}, #{MEMBER_NAME}, #{MEMBER_EMAIL},#{MEMBER_PHONE_NUMBER})
+	</insert>
+	
+	<select id="memberLogin" resultType="com.comic.model.MemberVO">
+		SELECT * FROM COMIC_MEMBER WHERE MEMBER_ID = #{MEMBER_ID}
+	</select>
+	
+	<insert id="roomuse">
+		INSERT INTO COMIC_ROOMUSE(ROOMUSE_ID, ROOMUSE_NUM, ROOMUSE_STARTTIME, ROOMUSE_STATUS) VALUES (#{roomuse_id},#{roomnum},sysdate,'on')
+	</insert>
+	
+	<select id="MemberGetList" resultType="com.comic.model.MemberVO">
+		SELECT * FROM COMIC_MEMBER
+	</select>
+	
+	<select id="MemberRead" resultType="com.comic.model.MemberVO">
+		SELECT * FROM COMIC_MEMBER WHERE MEMBER_ID = #{MEMBER_ID}
+	</select>
+	
+	<update id="MemberUpdate">
+		UPDATE COMIC_MEMBER SET 
+		MEMBER_EMAIL=#{MEMBER_EMAIL},
+		MEMBER_PHONE_NUMBER=#{MEMBER_PHONE_NUMBER}
+		WHERE MEMBER_ID=#{MEMBER_ID}
+	</update>
+	
+	<delete id="MemberDelete">
+		DELETE COMIC_MEMBER WHERE MEMBER_ID=#{MEMBER_ID}
+	</delete>
+	
+	<select id="MemberCheck" resultType="com.comic.model.MemberVO">
+		SELECT * FROM COMIC_MEMBER
+		WHERE MEMBER_ID = #{MEMBER_ID} AND
+		MEMBER_NAME = #{MEMBER_NAME} AND
+		MEMBER_EMAIL = #{MEMBER_EMAIL} AND
+		MEMBER_PHONE_NUMBER = #{MEMBER_PHONE_NUMBER}
+	</select>
+	
+	<update id="MemberPasswordModify">
+		UPDATE COMIC_MEMBER SET MEMBER_PWD = #{MEMBER_PWD}
+		WHERE MEMBER_ID = #{MEMBER_ID} AND
+		MEMBER_NAME = #{MEMBER_NAME} AND
+		MEMBER_EMAIL = #{MEMBER_EMAIL} AND
+		MEMBER_PHONE_NUMBER = #{MEMBER_PHONE_NUMBER}
+	</update>
+	
+	<update id="MemberUpdate2">
+		UPDATE COMIC_MEMBER SET 
+		MEMBER_PWD=#{MEMBER_PWD},
+		MEMBER_EMAIL=#{MEMBER_EMAIL},
+		MEMBER_PHONE_NUMBER=#{MEMBER_PHONE_NUMBER}
+		WHERE MEMBER_ID=#{MEMBER_ID}
+	</update>
+	
+	<select id="getMember" resultType="com.comic.model.MemberVO">
+		SELECT * FROM COMIC_MEMBER WHERE MEMBER_ID = #{MEMBER_ID}
+	</select>
+	
+	<select id="membermodifypasswordcheck" resultType="String">
+		SELECT MEMBER_PWD FROM COMIC_MEMBER WHERE MEMBER_ID = #{MEMBER_ID}
+	</select>
+	
+	<insert id="employeeInsert">
+      INSERT INTO COMIC_EMPLOYEE VALUES ((SELECT NVL(MAX(EMPLOYEE_NUM),1000)+1 FROM COMIC_EMPLOYEE),
+      #{EMPLOYEE_PWD}, #{EMPLOYEE_NAME}, #{EMPLOYEE_PHONE}, #{EMPLOYEE_ACCOUNT}, SYSDATE, #{EMPLOYEE_POSITION},
+       #{EMPLOYEE_PAY})
+    	<selectKey keyProperty="EMPLOYEE_NUM" resultType="integer" order="AFTER">
+	    	select MAX(EMPLOYEE_NUM) as EMPLOYEE_NUM from COMIC_EMPLOYEE
+	  	</selectKey>
+   </insert>
+
+	<select id="employeeLogin" resultType="com.comic.model.EmployeeVO">
+		SELECT * FROM COMIC_EMPLOYEE WHERE EMPLOYEE_NUM = #{EMPLOYEE_NUM}
+	</select>
+	
+	<update id="EmployeekeepLogin">
+		UPDATE COMIC_EMPLOYEE SET SESSION_KEY = #{sessionId},
+		SESSION_LIMIT = #{sessionLimit} WHERE EMPLOYEE_NUM = #{EMPLOYEE_NUM}
+	</update>
+	
+	<select id="checkUserWithSessionKey" resultType="com.comic.model.MemberVO">
+		SELECT * FROM COMIC_MEMBER WHERE SESSION_KEY = #{value}
+	</select>
+	
+</mapper>

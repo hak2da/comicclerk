@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.BookAttachMapper">
+	
+	<insert id="insert">
+		INSERT INTO COMIC_BOOKATTACH VALUES(#{uuid},#{uploadPath},#{fileName},#{fileType},#{book_name})
+	</insert>
+	
+	<delete id="delete">
+		DELETE FROM COMIC_BOOKATTACH WHERE UUID=#{uuid}
+	</delete>
+	
+	<select id="findByBookName" resultType="com.comic.model.BookAttachVO" >
+		SELECT * FROM COMIC_BOOKATTACH WHERE BOOK_NAME=#{book_name}
+	</select>
+	
+	<delete id="deleteAll">
+		DELETE COMIC_BOOKATTACH WHERE BOOK_NAME=#{book_name}
+	</delete>
+	
+	<select id="getOldFiles" resultType="com.comic.model.BookAttachVO">
+		select * from COMIC_BOOKATTACH where uploadpath = to_char(sysdate -1 ,'yyyy\mm\dd')
+	</select>
+	
+</mapper>

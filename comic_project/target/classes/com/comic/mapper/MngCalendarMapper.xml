@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.MngCalendarMapper">	
+	
+	<select id="workrecordmonth"
+		resultType="com.comic.model.WorkrecordVO">
+		select TO_CHAR( workinghour_workday,'yyyymmdd')"workday"
+	,TO_CHAR(workinghour_starttime, 'hh24:mi:ss')"starttime"
+	,TO_CHAR(workinghour_ENDtime, 'hh24:mi:ss')"endtime"
+	from comic_workinghour where TO_CHAR( workinghour_workday,'yyyymmdd') <![CDATA[ > ]]> #{startday}
+	and TO_CHAR( workinghour_workday,'yyyymmdd') <![CDATA[ < ]]> #{endday} and workinghour_emp_num=#{empnum}
+	</select>
+	
+	
+	
+</mapper>

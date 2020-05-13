@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.comic.mapper.CommentsMapper">
+	
+	<insert id="insert">
+	
+		insert into COMIC_COMMENTS (CMNT_NUM, BOARD_NUM, CMNT_CONTENT, CMNT_ID, CMNT_DATE)
+		values ((SELECT NVL(MAX(cmnt_num),0)+1 from COMIC_COMMENTS where BOARD_NUM= #{board_num}), 
+		#{board_num}, #{cmnt_content}, #{cmnt_id}, sysdate)
+		
+	</insert>
+
+	<select id="getList" resultType="com.comic.model.CommentsVO">
+	
+		select * from COMIC_COMMENTS where BOARD_NUM=#{board_num} order by CMNT_NUM desc
+	
+	</select>
+	
+	<update id="update">
+	
+		update COMIC_COMMENTS set CMNT_CONTENT = #{cmnt_content},
+		CMNT_DATE = sysdate where CMNT_NUM=#{cmnt_num}
+	
+	</update>
+	
+	
+	
+	<delete id="delete">
+	
+		delete from COMIC_COMMENTS where CMNT_NUM=#{cmnt_num}
+	</delete>
+	
+	<select id="getCountByBoard_num" resultType="int">
+		
+		select count(CMNT_NUM) from COMIC_COMMENTS where BOARD_NUM= #{board_num}
+	
+	</select>
+
+
+
+</mapper>

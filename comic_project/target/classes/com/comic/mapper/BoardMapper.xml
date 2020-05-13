@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.BoardMapper">
+
+	<select id="getListWithPaging" resultType="com.comic.model.BoardVO">
+		<![CDATA[
+		select 
+			BOARD_NUM, BOARD_ID, BOARD_CONTENT, BOARD_DATE, BOARD_TITLE
+		from
+			( 
+			select /*+INDEX_DESC(COMIC_BOARD pk_COMIC_BOARD) */
+				rownum rn, BOARD_NUM, BOARD_ID, BOARD_CONTENT, BOARD_DATE, BOARD_TITLE
+			from 
+				COMIC_BOARD
+			where
+		
+			]]>
+			
+			<include refid="criteria"></include> 
+		
+		  <![CDATA[	
+		  	rownum <=#{pageNum} * #{amount}
+		  	)
+		 where rn > (#{pageNum}-1) * #{amount} 
+		 ]]>
+	</select>
+
+	<select id="getTotalCount" resultType="int">
+		select count(*) from COMIC_BOARD where
+
+		<include refid="criteria"></include>
+
+		BOARD_NUM > 0
+
+	</select>
+	
+	<insert id="insert">
+		insert into COMIC_BOARD (BOARD_NUM, BOARD_TITLE, BOARD_CONTENT, BOARD_ID, BOARD_DATE)
+		values ((SELECT NVL(MAX(BOARD_NUM),0)+1 from COMIC_BOARD), #{board_title}, #{board_content}, #{board_id}, SYSDATE)
+	</insert>
+	
+	<select id="read" resultType="com.comic.model.BoardVO">
+		select * from COMIC_BOARD where BOARD_NUM = #{board_num}
+	</select>
+	
+	<delete id="AlsoDelete">
+		delete COMIC_COMMENTS where BOARD_NUM = #{board_num}
+	</delete>
+	
+	<delete id="delete">
+		delete COMIC_BOARD where BOARD_NUM = #{board_num}
+		
+	</delete>
+	
+	<update id="update">
+		update COMIC_BOARD set
+		BOARD_TITLE = #{board_title},
+		BOARD_CONTENT=#{board_content},
+		BOARD_ID = #{board_id},
+		BOARD_DATE = SYSDATE	
+		where BOARD_NUM = #{board_num}
+	</update>
+	
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+			<foreach item='type' collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							BOARD_TITLE like '%'||#{keyword}||'%'
+						</when>
+						<when test="type == 'C'.toString()">
+							BOARD_CONTENT like '%'||#{keyword}||'%'
+						</when>
+						<when test="type == 'W'.toString()">
+							BOARD_ID like '%'||#{keyword}||'%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>
+	</sql>
+	
+	
+	
+	
+</mapper>

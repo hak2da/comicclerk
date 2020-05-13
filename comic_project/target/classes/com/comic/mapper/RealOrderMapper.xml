@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.RealOrderMapper">
+	<select id="realOrderData" resultType="com.comic.model.RealOrderVO">
+		SELECT ORDER_NUM, ORDER_ID, ORDER_ROOMNUM, ORDER_TIME,
+		ORDER_QTY,PRODUCT_NAME, (PRODUCT_PRICE*ORDER_QTY) AS PRODUCT_PRICE 
+		FROM COMIC_ORDER 
+		LEFT OUTER JOIN COMIC_PRODUCTSTOCK 
+		ON PRODUCT_NUM = ORDER_PRODUCT_NUM
+		WHERE TO_CHAR(ORDER_TIME, 'YY-MM-DD') = TO_CHAR(SYSDATE, 'YY-MM-DD')
+	</select>
+</mapper>

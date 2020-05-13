@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.SettlementMapper">
+	<select id="settlementList"
+		resultType="com.comic.model.ProductVO">
+		SELECT PRODUCT_NUM, PRODUCT_CATEGORY, PRODUCT_NAME,
+		PRODUCT_QTY FROM COMIC_PRODUCTSTOCK ORDER BY PRODUCT_NUM ASC
+	</select>
+
+	<update id="settlementUpdate">UPDATE COMIC_PRODUCTSTOCK
+		SET
+		PRODUCT_QTY=#{currentNum}
+		WHERE PRODUCT_NUM = #{num}
+	</update>
+
+	<insert id="settlementLossInsert">
+		insert into
+		comic_loss(loss_category,loss_qty,loss_pay,loss_product,loss_date)
+		values (#{category}, #{errorNum}, 
+		#{pay}*(select product_price from comic_productstock where product_num = #{num}) ,
+		(select product_name from comic_productstock where product_num = #{num}),
+		sysdate)
+	</insert>
+</mapper>

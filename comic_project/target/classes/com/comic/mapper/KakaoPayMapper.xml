@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.KakaoPayMapper">
+	<insert id="insertroomSale">
+		insert into comic_roomsales
+		(roomsales_id,roomsales_num,roomsales_totalprice,roomsales_time)
+		select roomuse_id, roomuse_num, (select
+		CEIL(trunc((sysdate-roomuse_starttime)*60*24)/10)*500 from
+		comic_roomuse where roomuse_id=#{id}) as roomuse_price,
+		(select sysdate from dual) as roomuse_endtime from comic_roomuse where roomuse_id=#{id}
+	</insert>
+
+	<insert id="insertproductSale">
+		insert into comic_productsales (productsales_id,
+		productsales_qty, productsales_time, productsales_product,
+		productsales_order_price)
+		select order_id, order_qty, order_time, (select product_name from
+		comic_productstock where product_num = order_product_num) as
+		order_product, (select product_price from comic_productstock where
+		product_num = order_product_num)*order_qty from comic_order where
+		order_id=#{id} and (select roomuse_starttime from comic_roomuse
+		where roomuse_id = #{id}) &lt; order_time
+	</insert>
+
+	<delete id="resetRoom">
+		delete from comic_roomuse where roomuse_id = #{id}
+	</delete>
+	
+	<update id="productUpdate">
+		update comic_productstock set product_qty = product_qty - NVL((select
+		order_qty from comic_order where order_id = #{id} and (select
+		roomuse_starttime from comic_roomuse where roomuse_id = #{id}) &lt;
+		order_time),0) where product_num = NVL((select order_product_num from
+		comic_order where order_id = #{id} and (select roomuse_starttime from
+		comic_roomuse where roomuse_id = #{id}) &lt; order_time),0)
+	</update>
+	
+	<select id="billGetList" resultType="com.comic.model.BillVO">
+		select order_product_num, sum(order_qty) as order_qty from comic_order where order_id = #{id} and (select roomuse_starttime from comic_roomuse where roomuse_id = #{id}) &lt; order_time group by order_product_num
+	</select>
+	
+	<update id="productQtyUpdate">
+		update comic_productstock set product_qty = product_qty-#{order_qty} where product_num = #{order_product_num}
+	</update>
+	
+</mapper>

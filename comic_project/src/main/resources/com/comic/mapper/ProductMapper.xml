@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.ProductMapper">
+	
+	<select id="productGetList" resultType="com.comic.model.ProductVO">
+		SELECT * FROM COMIC_PRODUCTSTOCK
+	</select>
+	
+	<select id="productCategory" resultType="com.comic.model.ProductVO">
+		<!-- SELECT DISTINCT(product_category) FROM COMIC_PRODUCTSTOCK -->
+		select product_category from comic_productstock where product_category not in(SELECT DISTINCT(a.product_category) FROM COMIC_PRODUCTSTOCK a, COMIC_ORDERVIEW b where a.product_category = b.orderview_category)
+	</select>
+	
+	<select id="productRead" resultType="com.comic.model.ProductVO">
+		SELECT * FROM COMIC_PRODUCTSTOCK WHERE PRODUCT_NUM=#{product_num}
+	</select>
+	
+	<insert id="productInsert">
+		INSERT INTO COMIC_PRODUCTSTOCK VALUES((SELECT NVL(MAX(PRODUCT_NUM),0)+1 FROM COMIC_PRODUCTSTOCK),#{product_name},#{product_price},#{product_qty},#{product_category})
+	</insert>
+	
+	<update id="productUpdate">
+		UPDATE COMIC_PRODUCTSTOCK SET 
+		PRODUCT_NAME=#{product_name},
+		PRODUCT_PRICE=#{product_price},
+		PRODUCT_QTY=#{product_qty},
+		PRODUCT_CATEGORY=#{product_category}
+		WHERE PRODUCT_NUM=#{product_num}
+	</update>
+	
+	<delete id="productDelete">
+		DELETE COMIC_PRODUCTSTOCK WHERE PRODUCT_NUM=#{product_num}
+	</delete>
+	
+	<select id="productNameCheck" resultType="com.comic.model.ProductVO">
+		SELECT * FROM COMIC_PRODUCTSTOCK WHERE PRODUCT_NAME=#{product_name}
+	</select>
+	
+	<select id="productCategoryName" resultType="com.comic.model.ProductVO">
+		<!-- select * from COMIC_PRODUCTSTOCK where product_category=#{product_category} -->
+		select * from COMIC_PRODUCTSTOCK where product_category=#{product_category} and product_num not in (select orderview_product_num from COMIC_ORDERVIEW_PRODUCT)
+	</select>
+	
+	<!-- <update id="productNumUpdate">
+		UPDATE COMIC_PRODUCTSTOCK SET PRODUCT_NUM=#{product_num}-1 WHERE PRODUCT_NUM=#{product_num}
+	</update> -->
+	
+	<!-- <select id="productNumSelect" resultType="Integer">
+		select count(*) from COMIC_PRODUCTSTOCK where product_num > #{product_num}
+	</select> -->
+	
+</mapper>

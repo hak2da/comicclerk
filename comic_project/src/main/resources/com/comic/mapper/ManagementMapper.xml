@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.ManagementMapper">	
+	
+	<select id="employeelist"
+		resultType="com.comic.model.EmployeeVO">
+		select * from comic_employee order by employee_num
+	</select>
+	
+	<select id="getempdata"
+		resultType="com.comic.model.EmployeeVO">
+		select * from comic_employee where employee_num=#{empnum}
+	</select>
+	
+	<select id="selectworkmonth"
+		resultType="Integer">
+		select count(*) from comic_pay where PAY_EMP_NUM=#{empnum} and pay_workmonth=#{workmonth}
+	</select>
+	
+	<insert id="insertworkmonth">
+		insert into comic_pay 
+		(PAY_EMP_NUM,PAY_WORKMONTH,PAY_DATE) 
+		values(#{empnum},#{workmonth},( TO_DATE(#{payday},'yymmdd')))
+	</insert>
+	
+	
+	<delete id="deletemng">
+	delete from comic_employee where employee_pwd=#{emppwd} and employee_num=#{mngnum}
+	</delete>
+	
+	<select id="managerlogin"
+		resultType="Integer">
+		select count(*) from comic_employee where employee_num=#{empnum} and employee_pwd=#{emppwd}
+	</select>
+	
+	<select id="managerloginrecord"
+		resultType="Integer">
+		SELECT count(*) FROM comic_workinghour 
+		WHERE TO_CHAR(workinghour_workday, 'YYMMDD')
+		 = #{todaydate} and workingHour_emp_num=#{empnum}
+	</select>
+	
+	<insert id="managerattendance">
+		insert into comic_workinghour 
+		(workinghour_emp_num,workinghour_starttime,workinghour_workday) 
+		values(#{empnum},sysdate,sysdate)
+	</insert>
+	
+	<update id="managerleavework">
+	update comic_workinghour set workinghour_endtime=sysdate where workingHour_emp_num=#{empnum}
+	and TO_CHAR(workinghour_workday,'yymmdd')= #{leaveworkday}
+	</update>
+	
+	<update id="setmonthlypay">
+	update comic_pay set PAY_TOTALTIME=#{hour} where PAY_WORKMONTH=#{workmonth} 
+	and PAY_EMP_NUM=#{empnum}
+	</update>
+	
+	<update id="employeeModify">
+	update COMIC_EMPLOYEE set employee_name=#{EMPLOYEE_NAME},employee_pwd=#{EMPLOYEE_PWD}
+	,employee_phone=#{EMPLOYEE_PHONE}
+	,employee_account=#{EMPLOYEE_ACCOUNT},employee_position=#{EMPLOYEE_POSITION},
+	employee_pay=#{EMPLOYEE_PAY} where employee_num=#{EMPLOYEE_NUM}
+	</update>
+	
+	
+	
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.ManagerPosMapper">	
+	<insert id="roomstart">
+	insert into comic_roomuse (ROOMUSE_id,ROOMUSE_num,ROOMUSE_status,ROOMUSE_starttime)
+	values (#{roomuse_id},#{roomuse_num},#{roomuse_status},sysdate)
+	</insert>
+	
+	<delete id ="roomstop">
+		delete comic_roomuse where roomuse_num=#{roomuse_num}
+	</delete>
+	
+	<select id="roomuselist"
+		resultType="com.comic.model.RoomuseVO">
+		select roomuse_id,roomuse_num,roomuse_status,to_char(roomuse_starttime,'hh24:mi:ss')
+		"starttime" from comic_roomuse
+	</select>	
+	
+	<select id="roomuselist2"
+		resultType="com.comic.model.RoomuseVO">
+		select roomuse_id,roomuse_num,roomuse_status,to_char(roomuse_starttime,'hh24:mi:ss')
+		"starttime" from comic_roomuse
+	</select>
+	
+	<select id="todaycommutelist"
+		resultType="com.comic.model.TodaycommuteVO">
+		select w.WORKINGHOUR_EMP_NUM"empnum",
+		TO_CHAR(w.workinghour_starttime, 'hh24:mi:ss')"starttime",
+		TO_CHAR(w.workinghour_ENDtime, 'hh24:mi:ss')"endtime",
+    	c.EMPLOYEE_NAME"empname" from COMIC_WORKINGHOUR w,comic_employee c 
+		where TO_CHAR(w.workinghour_workday, 'YYMMDD') = #{todayformat} and w.WORKINGHOUR_EMP_NUM= c.employee_num order by 1
+	</select>
+	
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.comic.mapper.LossMapper">
+	<select id="lossList"
+		resultType="com.comic.model.LossVO">
+		SELECT * FROM COMIC_LOSS ORDER BY LOSS_DATE DESC
+	</select>
+	
+	<insert id="lossInsert">  <!-- 정산 시 손실테이블 자동 추가 -->
+		insert into
+		comic_loss(loss_num,loss_category,loss_qty,loss_pay,loss_product,loss_date)
+		values ((select NVL(MAX(LOSS_NUM),0)+1 from comic_loss),#{category}, #{errorNum}, 
+		#{pay}*(select product_price from comic_productstock where product_num = #{num}) ,
+		(select product_name from comic_productstock where product_num = #{num}),
+		sysdate)
+	</insert>
+	
+	<insert id="lossRegister"> <!-- 관리자 직접 추가 -->
+		INSERT INTO COMIC_LOSS VALUES((SELECT NVL(MAX(LOSS_NUM),0)+1 FROM COMIC_LOSS),#{loss_category},#{loss_qty},#{loss_pay},#{loss_product},#{loss_date})
+	</insert>
+	
+	<delete id="lossDelete">
+		DELETE COMIC_LOSS WHERE LOSS_NUM=#{loss_num}
+	</delete>
+	
+	<select id="lossRead" resultType="com.comic.model.LossVO">
+		SELECT * FROM COMIC_LOSS WHERE LOSS_NUM=#{loss_num}
+	</select>
+	
+	<update id="lossUpdate">
+		UPDATE COMIC_LOSS SET 
+		LOSS_QTY=#{loss_qty},
+		LOSS_PAY=#{loss_pay},
+		LOSS_DATE=#{loss_date},
+		LOSS_CATEGORY=#{loss_category},
+		LOSS_PRODUCT=#{loss_product}
+		WHERE LOSS_NUM=#{loss_num}
+	</update>
+	
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.BookMapper">
+	
+	<select id="bookGetList" resultType="com.comic.model.BookVO">
+		SELECT * FROM COMIC_BOOK
+	</select>
+	
+	<select id="bookRead" resultType="com.comic.model.BookVO">
+		SELECT * FROM COMIC_BOOK  WHERE BOOK_NAME =#{book_name}
+	</select>
+	
+	<insert id="bookInsert">
+		INSERT INTO COMIC_BOOK  VALUES(#{book_name},#{book_loc},#{book_publisher},#{book_writer},#{book_content},#{book_category},#{book_lastbook},#{book_status})
+	</insert>
+	
+	<update id="bookUpdate">
+		UPDATE COMIC_BOOK SET 
+		BOOK_NAME=#{book_name_change},
+		BOOK_LOC=#{book_loc},
+		BOOK_PUBLISHER=#{book_publisher},
+		BOOK_WRITER=#{book_writer},
+		BOOK_CONTENT=#{book_content},
+		BOOK_CATEGORY=#{book_category},
+		BOOK_LASTBOOK=#{book_lastbook},
+		BOOK_STATUS=#{book_status}
+		WHERE BOOK_NAME=#{book_name}
+	</update>
+	
+	<delete id="bookDelete">
+		DELETE COMIC_BOOK WHERE BOOK_NAME=#{book_name}
+	</delete>
+	
+	<select id="bookNameCheck" resultType="com.comic.model.BookVO">
+		SELECT * FROM COMIC_BOOK WHERE BOOK_NAME=#{book_name}
+	</select>
+	
+</mapper>
